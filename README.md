@@ -1,6 +1,6 @@
-# Isolate
+# Jisolate
 
-Isolate is an API for isolating Java classes using either classloader or VM isolation. 
+Jisolate is an API for isolating Java classes using either classloader or VM isolation. 
 
 ## Why Isolation?
 
@@ -18,7 +18,7 @@ is the isolation approach of choice as it is the most performant approach of ens
 and allows for an easy way to communicate results from the isolated code back to its invoker.
 
 ```java
-    Isolate isolate = Isolation.classLoaderIsolation()
+    Isolate isolate = Jisolate.classLoaderIsolation()
         .withIsolatableClass(IsolatedClass.class)
         .withIsolatableArguments(new String[] { "foo" })
         .isolate();
@@ -30,7 +30,7 @@ VM isolation spawns a child VM in a separate process. The isolation provided by 
 is more encompassing than classloader isolation, but isolates are somewhat slower to create.
 
 ```java
-    Isolate isolate = Isolation.jvmIsolation()
+    Isolate isolate = Jisolate.jvmIsolation()
         .withMainClass(IsolatedClass.class)
         .withMainClassArguments(new String[] { "foo" })
         .isolate();
@@ -38,7 +38,7 @@ is more encompassing than classloader isolation, but isolates are somewhat slowe
 
 ## JSR-121
 
-The Isolate API is not an implementation of <a href="http://www.jcp.org/en/jsr/detail?id=121">JSR-121</a>, the Application
+Jisolate is not an implementation of <a href="http://www.jcp.org/en/jsr/detail?id=121">JSR-121</a>, the Application
 Isolation API Specification. Instead, it is a light-weight and pragmatic approach of providing
 a best effort isolation of Java classes that is useful for many scenarios.
 
