@@ -6,6 +6,21 @@
     <artifactId>jisolate</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <description>Isolation of Java classes using VM or classloader isolation</description>
+    <url>http://www.jisolate.com</url>
+    
+    <licenses>
+        <license>
+            <name>BSD-3</name>
+            <url>http://www.opensource.org/licenses/BSD-3-Clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/chrisgleissner/jisolate.git</connection>
+        <developerConnection>scm:git:https://github.com/chrisgleissner/jisolate.git</developerConnection>
+        <url>git:https://github.com/chrisgleissner/jisolate.git</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
