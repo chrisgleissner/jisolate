@@ -19,7 +19,7 @@
     <scm>
         <connection>scm:git:https://github.com/chrisgleissner/jisolate.git</connection>
         <developerConnection>scm:git:https://github.com/chrisgleissner/jisolate.git</developerConnection>
-        <url>git:https://github.com/chrisgleissner/jisolate.git</url>
+        <url>https://github.com/chrisgleissner/jisolate</url>
     </scm>
 
     <properties>
