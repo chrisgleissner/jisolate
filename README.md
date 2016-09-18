@@ -6,7 +6,7 @@ Jisolate is an API for isolating Java classes using either classloader or VM iso
 [![Build Status](https://travis-ci.org/chrisgleissner/jisolate.svg?branch=master)](https://travis-ci.org/chrisgleissner/jisolate)
 
 ## Requirements
-- Oracle JDK 7
+- Oracle JDK 8
 
 ## Why Isolation?
 
