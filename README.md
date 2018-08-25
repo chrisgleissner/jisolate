@@ -1,10 +1,9 @@
 # Jisolate
 
 [![Build Status](https://travis-ci.org/chrisgleissner/jisolate.svg?branch=master)](https://travis-ci.org/chrisgleissner/jisolate)
-
+[![Coverage Status](https://coveralls.io/repos/chrisgleissner/jisolate/badge.svg)](https://coveralls.io/r/chrisgleissner/jisolate)
 
 Jisolate is an API for isolating Java classes using either classloader or VM isolation. 
-
 
 ## Why Isolation?
 
