@@ -1,12 +1,10 @@
 # Jisolate
 
-Jisolate is an API for isolating Java classes using either classloader or VM isolation. 
-
-## Status
 [![Build Status](https://travis-ci.org/chrisgleissner/jisolate.svg?branch=master)](https://travis-ci.org/chrisgleissner/jisolate)
 
-## Requirements
-- Oracle JDK 8
+
+Jisolate is an API for isolating Java classes using either classloader or VM isolation. 
+
 
 ## Why Isolation?
 
@@ -25,7 +23,7 @@ and allows for an easy way to communicate results from the isolated code back to
 
 ```java
     Isolate isolate = Jisolate.classLoaderIsolation()
-        .withIsolatableClass(IsolatedClass.class)
+        .withIsolatableClass(IsolatedClass.class
         .withIsolatableArguments(new String[] { "foo" })
         .isolate();
 ```
