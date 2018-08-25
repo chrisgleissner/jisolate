@@ -30,18 +30,18 @@
  */
 package com.jisolate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+
+import static java.lang.System.currentTimeMillis;
+import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.junit.Assert.*;
 
 public abstract class AbstractIsolaterTest {
 
@@ -60,12 +60,16 @@ public abstract class AbstractIsolaterTest {
         Isolate isolate = createIsolate();
         assertNotNull(isolate);
 
-        long startTime = System.currentTimeMillis();
-        while (!FILE.exists() && System.currentTimeMillis() - startTime < MAX_WAIT_TIME) {
+        // Wait for the isolated 'Isolate' instance to write to FILE
+        long startTime = currentTimeMillis();
+        boolean fileWriteOccurred;
+        do  {
             Thread.sleep(50);
-        }
-        LOG.info("Isolate was created in {}ms", System.currentTimeMillis() - startTime);
-        String actualFileContents = FileUtils.readFileToString(FILE);
+            fileWriteOccurred = FILE.exists() && readFileToString(FILE).equals("hello world");
+        } while (!fileWriteOccurred && currentTimeMillis() - startTime < MAX_WAIT_TIME);
+
+        LOG.info("Isolate was created in {}ms", currentTimeMillis() - startTime);
+        String actualFileContents = readFileToString(FILE);
 
         // Shows that isolate ran
         assertEquals("hello world", actualFileContents);
