@@ -8,9 +8,8 @@ Jisolate is an API for isolating Java classes using either classloader or VM iso
 ## Why Isolation?
 
 Isolates are useful to load the same class multiple times, typically using different configurations.
-For example, some frameworks such as Coherence or DataSynapse are configured using static 
-singletons. For tests, it is often useful to start multiple instances of these frameworks, 
-each with its own configuration.  
+For example, some frameworks are configured using static singletons. For tests, it is often useful 
+to start multiple instances of these frameworks, each with its own configuration.  
 
 
 ## Classloader Isolation
@@ -22,8 +21,8 @@ and allows for an easy way to communicate results from the isolated code back to
 
 ```java
     Isolate isolate = Jisolate.classLoaderIsolation()
-        .withIsolatableClass(IsolatedClass.class
-        .withIsolatableArguments(new String[] { "foo" })
+        .withIsolatableClass(IsolatedClass.class)
+        .withIsolatableArguments("foo")
         .isolate();
 ```
 
@@ -35,7 +34,7 @@ is more encompassing than classloader isolation, but isolates are somewhat slowe
 ```java
     Isolate isolate = Jisolate.jvmIsolation()
         .withMainClass(IsolatedClass.class)
-        .withMainClassArguments(new String[] { "foo" })
+        .withMainClassArguments("foo")
         .isolate();
 ```
 
