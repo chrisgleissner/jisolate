@@ -49,7 +49,7 @@ public class JisolateTest {
 
 
     private void assertIsolationWorks() throws IOException, InterruptedException {
-        // Wait for the isolated 'Isolate' instance to write to FILE
+        // Wait for the isolated 'IsolatedClass' instance to write to FILE
         await().atMost(2, SECONDS).until(() -> FILE.exists() && readFileToString(FILE, defaultCharset()).equals(EXPECTED_FILE_CONTENTS));
         String actualFileContents = readFileToString(FILE, defaultCharset());
 
