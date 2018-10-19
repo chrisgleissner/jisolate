@@ -15,27 +15,32 @@ to start multiple instances of these frameworks, each with its own configuration
 ## Classloader Isolation
 
 Classloader isolation uses a child-first classloader combined with thread-local system properties
-to ensure that non-JDK classes can be loaded multiple times in the same JVM. Classloader isolation
-is the isolation approach of choice as it is the most performant approach of ensuring isolation
+to ensure that non-JDK classes can be loaded multiple times in the same JVM. 
+
+Classloader isolation is the isolation approach of choice as it is the most performant approach of ensuring isolation
 and allows for an easy way to communicate results from the isolated code back to its invoker.
 
 ```java
-    Isolate isolate = Jisolate.classLoaderIsolation()
-        .withIsolatableClass(IsolatedClass.class)
-        .withIsolatableArguments("foo")
-        .isolate();
+Jisolate.classLoaderIsolation().withIsolatableClass(IsolatedClass.class).withIsolatableArguments("foo").isolate();
 ```
 
 ## VM Isolation
 
-VM isolation spawns a child VM in a separate process. The isolation provided by this approach
-is more encompassing than classloader isolation, but isolates are somewhat slower to create.
+VM isolation spawns a child VM process. This provides even better isolation than the classloader approach,
+but it takes slightly longer to setup.
 
 ```java
-    Isolate isolate = Jisolate.jvmIsolation()
-        .withMainClass(IsolatedClass.class)
-        .withMainClassArguments("foo")
-        .isolate();
+Jisolate.jvmIsolation().withMainClass(IsolatedClass.class).withMainClassArguments("foo").isolate();
+```
+
+#### Lifecycle control
+
+VM isolation also allows for forcefully terminating the isolated JVM process when it's no longer needed:
+
+```java
+try (JvmIsolate isolate = Jisolate.jvmIsolation().withMainClass(IsolatedClass.class).withMainClassArguments("foo").isolate()) {
+        // The isolated JVM is automatically terminated on leaving this block    
+}
 ```
 
 ## JSR-121
