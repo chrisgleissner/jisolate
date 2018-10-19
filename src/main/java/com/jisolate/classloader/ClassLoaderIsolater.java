@@ -30,7 +30,6 @@
  */
 package com.jisolate.classloader;
 
-import com.google.common.collect.Lists;
 import com.jisolate.properties.ThreadLocalProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
