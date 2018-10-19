@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,23 @@
  */
 package com.jisolate.classloader;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
-
 public class ChildFirstUrlClassLoader extends URLClassLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ChildFirstUrlClassLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(ChildFirstUrlClassLoader.class);
     private final Map<String, URL> loadedResources = Maps.newHashMap();
 
-    public ChildFirstUrlClassLoader(final URL[] urls, final ClassLoader classLoader) {
+    ChildFirstUrlClassLoader(final URL[] urls, final ClassLoader classLoader) {
         super(urls, classLoader);
-        LOG.debug("Created child class loader. URLs: {}", Joiner.on("\n").join(urls));
+        log.debug("Created child class loader. URLs: {}", Joiner.on("\n").join(urls));
     }
 
     @Override
@@ -56,11 +54,10 @@ public class ChildFirstUrlClassLoader extends URLClassLoader {
         URL loadResource = loadedResources.get(name);
         if (loadResource == null) {
             loadResource = findResource(name);
-            if (loadResource == null) {
+            if (loadResource == null)
                 loadResource = super.getResource(name);
-            } else {
+            else
                 loadedResources.put(name, loadResource);
-            }
         }
         return loadResource;
     }
@@ -72,15 +69,15 @@ public class ChildFirstUrlClassLoader extends URLClassLoader {
         if (loadedClass == null) {
             try {
                 loadedClass = findClass(name);
-                LOG.debug("[child classloader]  {}", name);
+                log.debug("[child classloader]  {}", name);
             } catch (ClassNotFoundException e) {
                 loadedClass = getParent().loadClass(name);
-                LOG.debug("[parent classloader] {}", name);
+                log.debug("[parent classloader] {}", name);
             } catch (SecurityException e) {
-                throw Throwables.propagate(e);
+                throw new RuntimeException(e);
             }
         } else {
-            LOG.debug("[found loaded class] {}", name);
+            log.debug("[found loaded class] {}", name);
         }
 
         if (resolve) {

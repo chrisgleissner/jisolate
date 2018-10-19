@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ public class MessageWrapper {
 
     private final String message;
 
-    public MessageWrapper(String message) {
+    MessageWrapper(String message) {
         this.message = message;
     }
 

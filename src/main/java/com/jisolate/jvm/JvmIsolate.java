@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,9 @@
  */
 package com.jisolate.jvm;
 
-import java.io.IOException;
+import java.io.Closeable;
 
-import com.google.common.base.Throwables;
-import com.jisolate.Isolate;
-
-public class JvmIsolate implements Isolate {
+public class JvmIsolate implements Closeable {
 
     private final Process process;
 
@@ -43,7 +40,7 @@ public class JvmIsolate implements Isolate {
         this.process = process;
     }
 
-    public void close() throws IOException {
+    public void close() {
         process.destroy();
     }
 
@@ -51,7 +48,7 @@ public class JvmIsolate implements Isolate {
         try {
             return process.waitFor();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException("Waiting failed for process " + process, e);
         }
     }
 }

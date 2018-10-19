@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,36 +30,34 @@
  */
 package com.jisolate.jvm;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.google.common.base.Preconditions;
+import com.jisolate.util.ClassPathUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.jisolate.Isolate;
-import com.jisolate.Isolater;
-import com.jisolate.util.ClassPathUtil;
+import java.util.Collection;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Isolater which relies on spawning child JVMs to ensure isolation.
  */
-public class JvmIsolater implements Isolater {
+public class JvmIsolater {
 
     public static class Builder {
 
         private final JvmIsolater template = new JvmIsolater();
 
-        public Isolate isolate() {
+        public JvmIsolate isolate() {
             return template.isolate();
         }
 
         public Builder withAdditionalCommandLineArguments(
                 Collection<String> additionalCommandLineArguments) {
-            template.additionalCommandLineArguments = Lists
-                    .newArrayList(additionalCommandLineArguments);
+            template.additionalCommandLineArguments = newArrayList(additionalCommandLineArguments);
             return this;
         }
 
@@ -69,8 +67,7 @@ public class JvmIsolater implements Isolater {
         }
 
         public Builder withInheritSystemProperties(List<String> inheritedSystemPropertyNames) {
-            template.inheritedSystemPropertyNames = Lists
-                    .newArrayList(inheritedSystemPropertyNames);
+            template.inheritedSystemPropertyNames = newArrayList(inheritedSystemPropertyNames);
             return this;
         }
 
@@ -80,12 +77,12 @@ public class JvmIsolater implements Isolater {
         }
 
         public Builder withMainClassArguments(Collection<String> mainClassArguments) {
-            template.mainClassArguments = Lists.newArrayList(mainClassArguments);
+            template.mainClassArguments = newArrayList(mainClassArguments);
             return this;
         }
 
         public Builder withMainClassArguments(String... mainClassArguments) {
-            template.mainClassArguments = Lists.newArrayList(mainClassArguments);
+            template.mainClassArguments = newArrayList(mainClassArguments);
             return this;
         }
 
@@ -95,10 +92,9 @@ public class JvmIsolater implements Isolater {
         }
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(JvmIsolater.class);
+    private static final Logger log = LoggerFactory.getLogger(JvmIsolater.class);
 
     private List<String> additionalCommandLineArguments;
-    private List<String> completeCommandLine;
     private boolean inheritClasspath = true;
     private List<String> inheritedSystemPropertyNames;
     private List<String> mainClassArguments;
@@ -112,48 +108,39 @@ public class JvmIsolater implements Isolater {
             ProcessBuilder builder = new ProcessBuilder(buildCommandLine());
             final Process process = builder.start();
             handleStdOutAndStdErrOf(process);
-            LOG.info("Performed JVM isolation of {}", mainClassName);
+            log.info("Performed JVM isolation of {}", mainClassName);
             return new JvmIsolate(process);
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException("Isolation of JVM failed", e);
         }
     }
 
     public <T> T isolate(Class<T> t) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     private List<String> buildCommandLine() {
-        List<String> commandLine = null;
+        List<String> commandLine = newArrayList();
+        commandLine.add("java");
 
-        if (completeCommandLine != null) {
-            commandLine = completeCommandLine;
-        } else {
-            commandLine = Lists.newArrayList();
-            commandLine.add("java");
-            if (additionalCommandLineArguments != null) {
-                commandLine.addAll(additionalCommandLineArguments);
-            }
+        if (additionalCommandLineArguments != null)
+            commandLine.addAll(additionalCommandLineArguments);
 
-            if (inheritClasspath) {
-                commandLine.add("-cp");
-                commandLine.add(getClasspath());
-            }
-
-            if (inheritedSystemPropertyNames != null && !inheritedSystemPropertyNames.isEmpty()) {
-                commandLine.addAll(getInheritedSystemProperties());
-            }
-
-            Preconditions.checkNotNull(mainClassName, "The 'mainClassName' property is mandatory");
-            commandLine.add(mainClassName);
-
-            if (!mainClassArguments.isEmpty()) {
-                commandLine.addAll(mainClassArguments);
-            }
+        if (inheritClasspath) {
+            commandLine.add("-cp");
+            commandLine.add(getClasspath());
         }
 
-        LOG.debug("Command line: {}", commandLine);
+        if (inheritedSystemPropertyNames != null && !inheritedSystemPropertyNames.isEmpty())
+            commandLine.addAll(getInheritedSystemProperties());
+
+        checkNotNull(mainClassName, "The 'mainClassName' property is mandatory");
+        commandLine.add(mainClassName);
+
+        if (!mainClassArguments.isEmpty())
+            commandLine.addAll(mainClassArguments);
+
+        log.debug("Command line: {}", commandLine);
         return commandLine;
     }
 
@@ -162,27 +149,11 @@ public class JvmIsolater implements Isolater {
     }
 
     private Collection<String> getInheritedSystemProperties() {
-        List<String> systemProperties = Lists.newArrayList();
-        for (String systemPropertyName : inheritedSystemPropertyNames) {
-            systemProperties.add(String.format("-D%s=%s", systemPropertyName,
-                    System.getProperty(systemPropertyName)));
-        }
-        return systemProperties;
+        return inheritedSystemPropertyNames.stream().map(n -> String.format("-D%s=%s", n, System.getProperty(n))).collect(toList());
     }
 
     private void handleStdOutAndStdErrOf(Process process) {
-        new StreamGobbler("stdout", process.getInputStream(), new StreamGobbler.LineHandler() {
-
-            public void handle(String line) {
-                LOG.info(line);
-            }
-        }).start();
-
-        new StreamGobbler("stderr", process.getErrorStream(), new StreamGobbler.LineHandler() {
-
-            public void handle(String line) {
-                LOG.error(line);
-            }
-        }).start();
+        new StreamGobbler("stdout", process.getInputStream(), line -> log.info(line)).start();
+        new StreamGobbler("stderr", process.getErrorStream(), line -> log.error(line)).start();
     }
 }

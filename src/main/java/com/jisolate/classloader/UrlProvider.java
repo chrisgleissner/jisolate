@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,31 +30,28 @@
  */
 package com.jisolate.classloader;
 
+import com.google.common.collect.Lists;
+import com.jisolate.util.ClassPathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+class UrlProvider {
+    private static final Logger log = LoggerFactory.getLogger(UrlProvider.class);
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.jisolate.util.ClassPathUtil;
-
-public class UrlProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger(UrlProvider.class);
-
-    public static URL[] getClassPathUrls(final Collection<String> jarsToExcludeFromClassPath) {
+    static URL[] getClassPathUrls(final Collection<String> jarsToExcludeFromClassPath) {
         return getClassPathUrls(ClassPathUtil.getJavaHome(System.getProperties()),
                 ClassPathUtil.getClassPath(),
                 ClassPathUtil.getPathSeparator(System.getProperties()), jarsToExcludeFromClassPath);
     }
 
     private static URL[] getClassPathUrls(final String javaHomePath, final String classPath,
-            final String pathSeparator, final Collection<String> jarsToExcludeFromClassPath) {
+                                          final String pathSeparator, final Collection<String> jarsToExcludeFromClassPath) {
         final List<URL> classPathUrls = Lists.newArrayList();
         for (final String classPathElement : classPath.split(pathSeparator)) {
             if (!classPathElement.startsWith(javaHomePath)) {
@@ -64,7 +61,7 @@ public class UrlProvider {
                         final String trimmedJarToExclude = jarToExclude.trim();
                         if (trimmedJarToExclude.length() != 0
                                 && classPathElement.contains(trimmedJarToExclude)) {
-                            LOG.debug("JAR {} excluded from classpath", trimmedJarToExclude);
+                            log.debug("JAR {} excluded from classpath", trimmedJarToExclude);
                             includeInClassPath = false;
                         }
                     }
@@ -73,11 +70,11 @@ public class UrlProvider {
                     try {
                         classPathUrls.add(new File(classPathElement).toURI().toURL());
                     } catch (MalformedURLException e) {
-                        throw Throwables.propagate(e);
+                        throw new RuntimeException("Could not get class path URLs", e);
                     }
                 }
             }
         }
-        return classPathUrls.toArray(new URL[classPathUrls.size()]);
+        return classPathUrls.toArray(new URL[0]);
     }
 }

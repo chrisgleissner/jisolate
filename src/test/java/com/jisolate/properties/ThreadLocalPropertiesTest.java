@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,14 @@
  */
 package com.jisolate.properties;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
 
 public class ThreadLocalPropertiesTest {
 
@@ -49,7 +47,7 @@ public class ThreadLocalPropertiesTest {
         private final CountDownLatch threadStarted;
 
         private PropertyVerification(CountDownLatch threadStarted,
-                CountDownLatch propertiesAreIsolated) {
+                                     CountDownLatch propertiesAreIsolated) {
             this.propertiesAreIsolated = propertiesAreIsolated;
             this.threadStarted = threadStarted;
         }
@@ -60,7 +58,7 @@ public class ThreadLocalPropertiesTest {
 
                 String propertyValue = "" + Thread.currentThread().getId();
                 System.setProperty(PROPERTY_NAME, propertyValue);
-                LOG.info("Setting system property {}={}", PROPERTY_NAME, propertyValue);
+                log.info("Setting system property {}={}", PROPERTY_NAME, propertyValue);
 
                 threadStarted.countDown();
                 long startTime = System.currentTimeMillis();
@@ -70,13 +68,12 @@ public class ThreadLocalPropertiesTest {
                 } while (System.currentTimeMillis() - startTime < THREAD_RUN_TIME);
                 propertiesAreIsolated.countDown();
             } catch (Exception e) {
-                LOG.warn("Thread failed", e);
-                throw Throwables.propagate(e);
+                throw new RuntimeException("Thread failed", e);
             }
         }
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(ThreadLocalPropertiesTest.class);
+    private static final Logger log = LoggerFactory.getLogger(ThreadLocalPropertiesTest.class);
 
     private final static String PROPERTY_NAME = "SystemPropertyIsolationTest."
             + System.currentTimeMillis();

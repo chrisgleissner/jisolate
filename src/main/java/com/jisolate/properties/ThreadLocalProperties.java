@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,32 +30,25 @@
  */
 package com.jisolate.properties;
 
-import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThreadLocalProperties extends Properties {
+import java.util.Properties;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ThreadLocalProperties.class);
-    private static final long serialVersionUID = 1L;
+public class ThreadLocalProperties extends Properties {
+    private static final Logger log = LoggerFactory.getLogger(ThreadLocalProperties.class);
 
     public static synchronized void activate() {
         Properties props = System.getProperties();
         if (!(props instanceof ThreadLocalProperties)) {
             System.setProperties(new ThreadLocalProperties(props));
-            LOG.info("Activated thread-local system properties");
+            log.info("Activated thread-local system properties");
         }
     }
 
-    private final ThreadLocal<Properties> localProperties = new ThreadLocal<Properties>() {
-        @Override
-        protected Properties initialValue() {
-            return new Properties();
-        }
-    };
+    private final ThreadLocal<Properties> localProperties = ThreadLocal.withInitial(Properties::new);
 
-    public ThreadLocalProperties(Properties properties) {
+    private ThreadLocalProperties(Properties properties) {
         super(properties);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Christian Gleissner.
+ * Copyright (c) 2013-2018 Christian Gleissner.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,12 +36,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.Closeables;
-
 public class StreamGobbler extends Thread {
 
-    public static interface LineHandler {
+    public interface LineHandler {
         void handle(String line);
     }
 
@@ -50,7 +47,7 @@ public class StreamGobbler extends Thread {
     private final InputStream is;
     private final LineHandler lineHandler;
 
-    public StreamGobbler(String name, InputStream is, LineHandler lineHandler) {
+    StreamGobbler(String name, InputStream is, LineHandler lineHandler) {
         this.is = is;
         this.lineHandler = lineHandler;
         super.setDaemon(true);
@@ -59,18 +56,13 @@ public class StreamGobbler extends Thread {
 
     @Override
     public void run() {
-        BufferedReader br = null;
-        try {
-            InputStreamReader isr = new InputStreamReader(is);
-            br = new BufferedReader(isr);
-            String line = null;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            String line;
             while ((line = br.readLine()) != null) {
                 lineHandler.handle(line);
             }
         } catch (IOException e) {
-            throw Throwables.propagate(e);
-        } finally {
-            Closeables.closeQuietly(br);
+            throw new RuntimeException("Could not read from input stream", e);
         }
     }
 }
