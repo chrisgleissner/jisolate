@@ -110,7 +110,7 @@ public class ClassLoaderIsolater {
                     invokeMainMethod(method.get());
                 } else {
                     method = getCallMethod(clazz);
-                    if (method != null) {
+                    if (method.isPresent()) {
                         result = invokeCallMethod(method.get());
                     } else {
                         throw new RuntimeException(
