@@ -21,7 +21,10 @@ Classloader isolation is the isolation approach of choice as it is the most perf
 and allows for an easy way to communicate results from the isolated code back to its invoker.
 
 ```java
-Jisolate.classLoaderIsolation().withIsolatableClass(IsolatedClass.class).withIsolatableArguments("foo").isolate();
+Jisolate.classLoaderIsolation()
+    .withIsolatableClass(IsolatedClass.class)
+    .withIsolatableArguments("foo")
+    .isolate();
 ```
 
 ## VM Isolation
@@ -30,7 +33,10 @@ VM isolation spawns a child VM process. This provides even better isolation than
 but it takes slightly longer to setup.
 
 ```java
-Jisolate.jvmIsolation().withMainClass(IsolatedClass.class).withMainClassArguments("foo").isolate();
+Jisolate.jvmIsolation()
+    .withMainClass(IsolatedClass.class)
+    .withMainClassArguments("foo")
+    .isolate();
 ```
 
 #### Lifecycle control
@@ -38,8 +44,12 @@ Jisolate.jvmIsolation().withMainClass(IsolatedClass.class).withMainClassArgument
 VM isolation also allows for forcefully terminating the isolated JVM process when it's no longer needed:
 
 ```java
-try (JvmIsolate isolate = Jisolate.jvmIsolation().withMainClass(IsolatedClass.class).withMainClassArguments("foo").isolate()) {
-        // The isolated JVM is automatically terminated on leaving this block    
+try (JvmIsolate isolate = Jisolate.jvmIsolation()
+    .withMainClass(IsolatedClass.class)
+    .withMainClassArguments("foo")
+    .isolate()) {
+    
+    // The isolated JVM is automatically terminated on leaving this block    
 }
 ```
 
