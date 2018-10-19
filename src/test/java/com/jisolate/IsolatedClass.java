@@ -42,19 +42,16 @@ import static java.nio.charset.Charset.defaultCharset;
 
 public class IsolatedClass {
 
-    private static AtomicInteger invocationCounter = new AtomicInteger();
+    static AtomicInteger numberOfInvocations = new AtomicInteger();
     private static final Logger log = LoggerFactory.getLogger(IsolatedClass.class);
 
-    static int getNumberOfInvocations() {
-        return invocationCounter.get();
-    }
-
     public static void main(String[] args) throws IOException {
-        String fileContents = args[0] + " "
-                + System.getProperty(JisolateTest.SYSTEM_PROPERTY_NAME);
+        String fileContents = args[0] + " " + System.getProperty(JisolateTest.SYSTEM_PROPERTY_NAME);
         FileUtils.write(JisolateTest.FILE, fileContents, defaultCharset());
+
         System.setProperty(JisolateTest.SYSTEM_PROPERTY_NAME, "moon");
         log.info(fileContents);
-        invocationCounter.incrementAndGet();
+
+        numberOfInvocations.incrementAndGet();
     }
 }
