@@ -34,11 +34,12 @@ import com.jisolate.util.ClassPathUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -56,7 +57,7 @@ public class JvmIsolater {
 
         public Builder withAdditionalCommandLineArguments(
                 Collection<String> additionalCommandLineArguments) {
-            template.additionalCommandLineArguments = newArrayList(additionalCommandLineArguments);
+            template.additionalCommandLineArguments = additionalCommandLineArguments;
             return this;
         }
 
@@ -66,7 +67,7 @@ public class JvmIsolater {
         }
 
         public Builder withInheritSystemProperties(List<String> inheritedSystemPropertyNames) {
-            template.inheritedSystemPropertyNames = newArrayList(inheritedSystemPropertyNames);
+            template.inheritedSystemPropertyNames = inheritedSystemPropertyNames;
             return this;
         }
 
@@ -76,12 +77,12 @@ public class JvmIsolater {
         }
 
         public Builder withMainClassArguments(Collection<String> mainClassArguments) {
-            template.mainClassArguments = newArrayList(mainClassArguments);
+            template.mainClassArguments = mainClassArguments;
             return this;
         }
 
         public Builder withMainClassArguments(String... mainClassArguments) {
-            template.mainClassArguments = newArrayList(mainClassArguments);
+            template.mainClassArguments = Arrays.asList(mainClassArguments);
             return this;
         }
 
@@ -93,10 +94,10 @@ public class JvmIsolater {
 
     private static final Logger log = LoggerFactory.getLogger(JvmIsolater.class);
 
-    private List<String> additionalCommandLineArguments;
+    private Collection<String> additionalCommandLineArguments;
     private boolean inheritClasspath = true;
-    private List<String> inheritedSystemPropertyNames;
-    private List<String> mainClassArguments;
+    private Collection<String> inheritedSystemPropertyNames;
+    private Collection<String> mainClassArguments;
     private String mainClassName;
 
     private JvmIsolater() {
@@ -119,7 +120,7 @@ public class JvmIsolater {
     }
 
     private List<String> buildCommandLine() {
-        List<String> commandLine = newArrayList();
+        List<String> commandLine = new ArrayList<>();
         commandLine.add("java");
 
         if (additionalCommandLineArguments != null)
@@ -133,7 +134,7 @@ public class JvmIsolater {
         if (inheritedSystemPropertyNames != null && !inheritedSystemPropertyNames.isEmpty())
             commandLine.addAll(getInheritedSystemProperties());
 
-        checkNotNull(mainClassName, "The 'mainClassName' property is mandatory");
+        requireNonNull(mainClassName, "The 'mainClassName' property is mandatory");
         commandLine.add(mainClassName);
 
         if (!mainClassArguments.isEmpty())

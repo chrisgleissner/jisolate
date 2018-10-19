@@ -1,12 +1,12 @@
 package com.jisolate;
 
-import com.google.common.collect.Lists;
 import com.jisolate.jvm.JvmIsolate;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.nio.charset.Charset.defaultCharset;
@@ -40,7 +40,7 @@ public class JisolateTest {
     @Test
     public void jvmIsolation() throws IOException, InterruptedException {
         try (JvmIsolate isolate = Jisolate.jvmIsolation().withMainClass(IsolatedClass.class)
-                .withInheritSystemProperties(Lists.newArrayList(SYSTEM_PROPERTY_NAME))
+                .withInheritSystemProperties(Arrays.asList(SYSTEM_PROPERTY_NAME))
                 .withMainClassArguments(FILE_CONTENTS).isolate()) {
             assertIsolationWorks();
             assertEquals(0, isolate.waitFor());

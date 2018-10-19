@@ -38,12 +38,11 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 /**
  * Isolater that uses a child-first classloader along with thread-local system properties to ensure isolation.
@@ -58,7 +57,7 @@ public class ClassLoaderIsolater {
         }
 
         public Builder withIsolatableArguments(Object... isolatableArguments) {
-            template.isolatableArguments = newArrayList(isolatableArguments);
+            template.isolatableArguments = asList(isolatableArguments);
             return this;
         }
 
@@ -68,12 +67,12 @@ public class ClassLoaderIsolater {
         }
 
         public Builder withJarsToExcludeFromClassPath(Collection<String> jarsToExcludeFromClassPath) {
-            template.jarsToExcludeFromClassPath = newArrayList(jarsToExcludeFromClassPath);
+            template.jarsToExcludeFromClassPath = jarsToExcludeFromClassPath;
             return this;
         }
 
         public Builder withMainClassArguments(Collection<Object> isolatableArguments) {
-            template.isolatableArguments = newArrayList(isolatableArguments);
+            template.isolatableArguments = isolatableArguments;
             return this;
         }
 
@@ -85,12 +84,12 @@ public class ClassLoaderIsolater {
 
     private static class IsolatedRunnable implements Runnable {
         private final URLClassLoader contextClassLoader;
-        private final List<Object> isolatableArguments;
+        private final Collection<Object> isolatableArguments;
         private final String isolatableClassName;
         private volatile Object result;
 
         IsolatedRunnable(URLClassLoader contextClassLoader, String isolatableClassName,
-                         List<Object> isolatableArguments) {
+                         Collection<Object> isolatableArguments) {
             this.contextClassLoader = contextClassLoader;
             this.isolatableArguments = isolatableArguments;
             this.isolatableClassName = isolatableClassName;
@@ -185,7 +184,7 @@ public class ClassLoaderIsolater {
     }
 
     private static final Logger log = LoggerFactory.getLogger(ClassLoaderIsolater.class);
-    public List<Object> isolatableArguments;
+    public Collection<Object> isolatableArguments;
     private final AtomicInteger isolationThreadCount = new AtomicInteger();
     private Collection<String> jarsToExcludeFromClassPath;
     private String mainClassName;

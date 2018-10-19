@@ -35,8 +35,8 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ChildFirstUrlClassLoaderTest {
@@ -79,7 +79,7 @@ public class ChildFirstUrlClassLoaderTest {
 
     @Before
     public void setUp() {
-        URL[] urls = UrlProvider.getClassPathUrls(newArrayList());
+        URL[] urls = UrlProvider.getClassPathUrls(new ArrayList<>());
         classLoader = Thread.currentThread().getContextClassLoader();
         isolatedClassLoader = new ChildFirstUrlClassLoader(urls, classLoader);
     }

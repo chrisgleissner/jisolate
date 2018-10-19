@@ -30,23 +30,26 @@
  */
 package com.jisolate.classloader;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 public class ChildFirstUrlClassLoader extends URLClassLoader {
 
     private static final Logger log = LoggerFactory.getLogger(ChildFirstUrlClassLoader.class);
-    private final Map<String, URL> loadedResources = Maps.newHashMap();
+    private final Map<String, URL> loadedResources = new HashMap<>();
 
     ChildFirstUrlClassLoader(final URL[] urls, final ClassLoader classLoader) {
         super(urls, classLoader);
-        log.debug("Created child class loader. URLs: {}", Joiner.on("\n").join(urls));
+        if (log.isDebugEnabled())
+            log.debug("Created child class loader. URLs: {}", stream(urls).map(URL::toString).collect(joining("\n")));
     }
 
     @Override

@@ -30,7 +30,6 @@
  */
 package com.jisolate.classloader;
 
-import com.google.common.collect.Lists;
 import com.jisolate.util.ClassPathUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,7 +52,7 @@ class UrlProvider {
 
     private static URL[] getClassPathUrls(final String javaHomePath, final String classPath,
                                           final String pathSeparator, final Collection<String> jarsToExcludeFromClassPath) {
-        final List<URL> classPathUrls = Lists.newArrayList();
+        final List<URL> classPathUrls = new ArrayList<>();
         for (final String classPathElement : classPath.split(pathSeparator)) {
             if (!classPathElement.startsWith(javaHomePath)) {
                 boolean includeInClassPath = true;
